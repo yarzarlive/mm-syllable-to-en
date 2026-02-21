@@ -50,16 +50,47 @@ class Converter
                 continue;
             }
 
-            $consonant = $this->getSyllableConsonant($syllable);
-
-            if ($consonant !== '') {
-                $this->loadDataForConsonant($consonant);
+            // Prepare sub-syllables based on the presence of stacked consonants (Patsint ္)
+            $subSyllables = [];
+            if (strpos($syllable, '္') !== false) {
+                if (preg_match('/^(.*?)(္)([က-အ])(.*)$/u', $syllable, $matches)) {
+                    $p1 = $matches[1];
+                    // If the first part already ends with an Asat (์) before the Patsint (like သင်္ဘော)
+                    if (mb_substr($p1, -1, 1, 'UTF-8') === '်') {
+                        $part1 = mb_substr($p1, 0, mb_strlen($p1, 'UTF-8') - 1, 'UTF-8') . 'င်'; // Standardize the င် block if an Asat is explicitly detected before Patsint. Actually wait, let's keep original $p1 which has Asat.
+                        $part1 = $p1;
+                    } else {
+                        $part1 = $p1 . '်';
+                    }
+                    $part2 = $matches[3] . $matches[4];
+                    $subSyllables = [$part1, $part2];
+                } else {
+                    $subSyllables = [$syllable];
+                }
+            } else {
+                $subSyllables = [$syllable];
             }
 
-            // Look up in dictionary, fallback to the original if not found.
-            // Depending on requirements, we could just drop or keep the original. 
-            // We'll keep the original if unknown so data isn't lost.
-            $englishParts[] = $this->dictionary[$syllable] ?? $syllable;
+            $currentEnglishParts = [];
+            foreach ($subSyllables as $index => $subSyllable) {
+                // Determine consonant and ensure TSV dictionary is loaded into memory
+                $consonant = $this->getSyllableConsonant($subSyllable);
+                if ($consonant !== '') {
+                    $this->loadDataForConsonant($consonant);
+                }
+
+                // Look up in dictionary, fallback to the original if not found
+                $translated = $this->dictionary[$subSyllable] ?? $subSyllable;
+
+                if ($index > 0) {
+                    $translated = strtolower($translated);
+                }
+
+                $currentEnglishParts[] = $translated;
+            }
+
+            // Combine parts back into string for this actual syllable and append to total results.
+            $englishParts[] = implode('', $currentEnglishParts);
         }
 
         return implode(' ', $englishParts);

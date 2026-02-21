@@ -4,3 +4,4 @@ composer.lock
 *.log
 .phpunit.result.cache
 .DS_Store
+/public/
