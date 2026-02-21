@@ -164,9 +164,9 @@ class Converter
         $text = preg_replace('/\s+/u', '', $text) ?? '';
 
         // Use zero-width assertion to find syllabus boundaries.
-        // It matches the position right before a consonant that starts a new syllable.
-        // i.e., not preceded by Patsint (္) and followed by a consonant that is not followed by Asat (်) or stacked (္).
-        $pattern = '/(?<!္)(?=[က-အ](?![်္]))/u';
+        // It matches the position right before a consonant, independent vowel, digit, or symbol that starts a new syllable.
+        // i.e., not preceded by Patsint (္) and followed by a valid start character that is not followed by Asat (်) or stacked (္).
+        $pattern = '/(?<!္)(?=[က-ဪ၀-၉၌-၏](?![်္]))/u';
 
         // Split the string into an array of syllables.
         $parts = preg_split($pattern, $text, -1, PREG_SPLIT_NO_EMPTY);
