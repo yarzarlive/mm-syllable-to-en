@@ -1,0 +1,36 @@
+{
+    "name": "yarzarlive/mm-syllable-to-en",
+    "description": "A PHP library to convert Burmese syllables to standardized English spellings",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "myanmar",
+        "burmese",
+        "names",
+        "romanization",
+        "syllable"
+    ],
+    "require": {
+        "php": ">=8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "MmNames\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MmNames\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Yar Zar",
+            "email": "yarzar@live.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
